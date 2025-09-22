@@ -1,5 +1,11 @@
-function _dfs(node) {
-  let output = [];
+interface TreeNode {
+  value: number | any;
+  left: TreeNode | null;
+  right: TreeNode | null;
+}
+
+function _dfs<T>(node: TreeNode | null | undefined): T[] {
+  let output: T[] = [];
   if (!node) return output;
   output = [...output, node.value, ..._dfs(node.left), ..._dfs(node.right)];
   return output;
