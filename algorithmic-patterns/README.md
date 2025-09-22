@@ -223,6 +223,36 @@ Learning to identify the right algorithmic pattern is a crucial skill. Here are 
 
 **LeetCode Examples:** Binary Tree Level Order, Word Ladder, Rotting Oranges
 
+**🔍 Detection Example:**
+```javascript
+// Problem: "Find the minimum number of steps to reach target"
+// Keywords: "minimum steps" → BFS!
+
+function minSteps(start, target) {
+    if (start === target) return 0;
+
+    const queue = [[start, 0]]; // [current, steps]
+    const visited = new Set([start]);
+
+    while (queue.length > 0) {
+        const [current, steps] = queue.shift();
+
+        // Try all possible moves
+        for (let next of getNextStates(current)) {
+            if (next === target) return steps + 1;
+            if (!visited.has(next)) {
+                visited.add(next);
+                queue.push([next, steps + 1]);
+            }
+        }
+    }
+    return -1;
+}
+```
+
+**🎯 When you see:** "minimum steps", "shortest path", "level by level"
+**👉 Think:** Queue + visited set + step counter
+
 #### **🌀 DFS Detection Signals**
 ```
 ✅ Use DFS when you see:
@@ -238,6 +268,40 @@ Learning to identify the right algorithmic pattern is a crucial skill. Here are 
 ```
 
 **LeetCode Examples:** Generate Parentheses, N-Queens, Word Search
+
+**🔍 Detection Example:**
+```javascript
+// Problem: "Generate all valid combinations of parentheses"
+// Keywords: "all", "generate" → DFS + Backtracking!
+
+function generateParenthesis(n) {
+    const result = [];
+
+    function dfs(current, open, close) {
+        // Base case: valid combination found
+        if (current.length === 2 * n) {
+            result.push(current);
+            return;
+        }
+
+        // Try adding opening bracket
+        if (open < n) {
+            dfs(current + '(', open + 1, close);
+        }
+
+        // Try adding closing bracket
+        if (close < open) {
+            dfs(current + ')', open, close + 1);
+        }
+    }
+
+    dfs('', 0, 0);
+    return result;
+}
+```
+
+**🎯 When you see:** "all combinations", "generate all", "find all paths"
+**👉 Think:** Recursion + backtracking + collect results
 
 #### **⚡ Dynamic Programming Detection Signals**
 ```
@@ -259,6 +323,46 @@ Key Questions:
 ```
 
 **LeetCode Examples:** Climbing Stairs, House Robber, Longest Common Subsequence
+
+**🔍 Detection Example:**
+```javascript
+// Problem: "Find maximum sum of non-adjacent elements"
+// Keywords: "maximum", "choices" → DP!
+
+function rob(nums) {
+    if (nums.length === 0) return 0;
+    if (nums.length === 1) return nums[0];
+
+    // dp[i] = max money we can rob up to house i
+    const dp = new Array(nums.length);
+    dp[0] = nums[0];
+    dp[1] = Math.max(nums[0], nums[1]);
+
+    for (let i = 2; i < nums.length; i++) {
+        // Choice: rob current house + best from i-2, OR skip current house
+        dp[i] = Math.max(
+            nums[i] + dp[i - 2],  // Rob current
+            dp[i - 1]             // Skip current
+        );
+    }
+
+    return dp[nums.length - 1];
+}
+
+// Space-optimized version
+function robOptimized(nums) {
+    let prev2 = 0, prev1 = 0;
+    for (let num of nums) {
+        let current = Math.max(prev1, prev2 + num);
+        prev2 = prev1;
+        prev1 = current;
+    }
+    return prev1;
+}
+```
+
+**🎯 When you see:** "maximum/minimum with choices", "count ways", "optimal substructure"
+**👉 Think:** State transition + memoization/tabulation
 
 #### **⚔️ Divide and Conquer Detection Signals**
 ```
@@ -289,6 +393,57 @@ Pattern: Build frequency map, then compare
 
 **LeetCode Examples:** Valid Anagram, Group Anagrams, Find All Anagrams
 
+**🔍 Detection Example:**
+```javascript
+// Problem: "Check if two strings are anagrams"
+// Keywords: "anagram", "compare strings" → Frequency Counter!
+
+function isAnagram(s, t) {
+    if (s.length !== t.length) return false;
+
+    // Build frequency map for first string
+    const charCount = {};
+    for (let char of s) {
+        charCount[char] = (charCount[char] || 0) + 1;
+    }
+
+    // Check against second string
+    for (let char of t) {
+        if (!charCount[char]) return false;
+        charCount[char]--;
+    }
+
+    return true;
+}
+
+// Alternative: Sort and compare
+function isAnagramSort(s, t) {
+    return s.split('').sort().join('') === t.split('').sort().join('');
+}
+
+// More complex: Group anagrams
+function groupAnagrams(strs) {
+    const groups = {};
+
+    for (let str of strs) {
+        // Create frequency signature
+        const count = new Array(26).fill(0);
+        for (let char of str) {
+            count[char.charCodeAt(0) - 'a'.charCodeAt(0)]++;
+        }
+        const key = count.join('#');
+
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(str);
+    }
+
+    return Object.values(groups);
+}
+```
+
+**🎯 When you see:** "anagram", "character frequency", "compare strings/arrays"
+**👉 Think:** Map/object to count occurrences + compare counts
+
 #### **🎯 Greedy Algorithm Detection Signals**
 ```
 ✅ Use Greedy when you see:
@@ -305,6 +460,88 @@ Key Question: Does making the best choice at each step guarantee the best overal
 ```
 
 **LeetCode Examples:** Jump Game, Gas Station, Meeting Rooms
+
+**🔍 Detection Examples:**
+
+**Activity Selection (Intervals):**
+```javascript
+// Problem: "Maximum number of non-overlapping intervals"
+// Keywords: "maximum", "non-overlapping" → Greedy!
+
+function eraseOverlapIntervals(intervals) {
+    if (intervals.length === 0) return 0;
+
+    // Greedy: Sort by end time, always pick earliest ending
+    intervals.sort((a, b) => a[1] - b[1]);
+
+    let count = 0;
+    let lastEnd = intervals[0][1];
+
+    for (let i = 1; i < intervals.length; i++) {
+        if (intervals[i][0] < lastEnd) {
+            // Overlapping - remove this interval
+            count++;
+        } else {
+            // Non-overlapping - update end time
+            lastEnd = intervals[i][1];
+        }
+    }
+
+    return count;
+}
+```
+
+**Jump Game (Farthest Reach):**
+```javascript
+// Problem: "Can you reach the last index?"
+// Keywords: "reach", optimal at each step → Greedy!
+
+function canJump(nums) {
+    let farthest = 0;
+
+    for (let i = 0; i < nums.length; i++) {
+        // Can't reach current position
+        if (i > farthest) return false;
+
+        // Update farthest reachable position
+        farthest = Math.max(farthest, i + nums[i]);
+
+        // Can reach the end
+        if (farthest >= nums.length - 1) return true;
+    }
+
+    return true;
+}
+```
+
+**Gas Station (Circular Array):**
+```javascript
+// Problem: "Find starting gas station to complete circuit"
+// Keywords: "starting point", "complete circuit" → Greedy!
+
+function canCompleteCircuit(gas, cost) {
+    let totalGas = 0, totalCost = 0;
+    let tank = 0, start = 0;
+
+    for (let i = 0; i < gas.length; i++) {
+        totalGas += gas[i];
+        totalCost += cost[i];
+        tank += gas[i] - cost[i];
+
+        // If tank goes negative, start from next station
+        if (tank < 0) {
+            start = i + 1;
+            tank = 0;
+        }
+    }
+
+    // Check if solution exists
+    return totalGas >= totalCost ? start : -1;
+}
+```
+
+**🎯 When you see:** "maximum/minimum with obvious best choice", "interval scheduling", "always pick best at each step"
+**👉 Think:** Sort by optimal criteria + make greedy choice
 
 #### **🔄 Recursion Detection Signals**
 ```
@@ -337,6 +574,61 @@ Variable Window: Size changes based on condition
 
 **LeetCode Examples:** Max Sum Subarray of Size K, Longest Substring Without Repeating Characters
 
+**🔍 Detection Examples:**
+
+**Fixed Window (size given):**
+```javascript
+// Problem: "Maximum sum of subarray of size k"
+// Keywords: "subarray", "size k" → Fixed Sliding Window!
+
+function maxSubarraySum(arr, k) {
+    if (arr.length < k) return 0;
+
+    // Calculate sum of first window
+    let windowSum = 0;
+    for (let i = 0; i < k; i++) {
+        windowSum += arr[i];
+    }
+
+    let maxSum = windowSum;
+
+    // Slide the window: remove first, add next
+    for (let i = k; i < arr.length; i++) {
+        windowSum = windowSum - arr[i - k] + arr[i];
+        maxSum = Math.max(maxSum, windowSum);
+    }
+
+    return maxSum;
+}
+```
+
+**Variable Window (condition-based):**
+```javascript
+// Problem: "Longest substring without repeating characters"
+// Keywords: "longest substring", "condition" → Variable Sliding Window!
+
+function lengthOfLongestSubstring(s) {
+    const seen = new Set();
+    let left = 0, maxLength = 0;
+
+    for (let right = 0; right < s.length; right++) {
+        // Shrink window while condition violated
+        while (seen.has(s[right])) {
+            seen.delete(s[left]);
+            left++;
+        }
+
+        seen.add(s[right]);
+        maxLength = Math.max(maxLength, right - left + 1);
+    }
+
+    return maxLength;
+}
+```
+
+**🎯 When you see:** "contiguous", "subarray of size k", "substring with condition"
+**👉 Think:** Two pointers (left/right) + expand/shrink window
+
 #### **👆 Two Pointers Detection Signals**
 ```
 ✅ Use Two Pointers when you see:
@@ -356,6 +648,77 @@ Patterns:
 ```
 
 **LeetCode Examples:** Two Sum II, Valid Palindrome, Remove Duplicates
+
+**🔍 Detection Examples:**
+
+**Opposite Direction (find pairs):**
+```javascript
+// Problem: "Two sum in sorted array"
+// Keywords: "sorted array", "find pair" → Two Pointers (opposite)!
+
+function twoSum(numbers, target) {
+    let left = 0, right = numbers.length - 1;
+
+    while (left < right) {
+        const sum = numbers[left] + numbers[right];
+
+        if (sum === target) {
+            return [left + 1, right + 1]; // 1-indexed
+        } else if (sum < target) {
+            left++;  // Need larger sum
+        } else {
+            right--; // Need smaller sum
+        }
+    }
+
+    return [];
+}
+```
+
+**Opposite Direction (palindrome):**
+```javascript
+// Problem: "Check if string is palindrome"
+// Keywords: "palindrome" → Two Pointers (opposite)!
+
+function isPalindrome(s) {
+    const cleaned = s.toLowerCase().replace(/[^a-z0-9]/g, '');
+    let left = 0, right = cleaned.length - 1;
+
+    while (left < right) {
+        if (cleaned[left] !== cleaned[right]) {
+            return false;
+        }
+        left++;
+        right--;
+    }
+
+    return true;
+}
+```
+
+**Same Direction (slow/fast):**
+```javascript
+// Problem: "Remove duplicates from sorted array in-place"
+// Keywords: "remove", "in-place", "sorted" → Two Pointers (same direction)!
+
+function removeDuplicates(nums) {
+    if (nums.length === 0) return 0;
+
+    let slow = 0; // Position for next unique element
+
+    for (let fast = 1; fast < nums.length; fast++) {
+        if (nums[fast] !== nums[slow]) {
+            slow++;
+            nums[slow] = nums[fast];
+        }
+    }
+
+    return slow + 1; // Length of unique array
+}
+```
+
+**🎯 When you see:** "sorted array + pair", "palindrome", "in-place modification"
+**👉 Think:** Two pointers moving opposite or same direction
 
 ### 🚦 Decision Tree for Pattern Selection
 
@@ -392,6 +755,129 @@ Some problems may require **multiple patterns**:
 - **DFS + Memoization** = Dynamic Programming
 - **BFS + Two Pointers** = Some shortest path problems
 - **Sliding Window + Frequency Counter** = Substring problems with character constraints
+
+### 💡 Quick Reference: Problem → Pattern Detection
+
+```javascript
+// ⚡ Quick Detection Cheat Sheet
+function detectPattern(problemDescription) {
+    const keywords = problemDescription.toLowerCase();
+
+    // Graph/Tree patterns
+    if (keywords.includes('shortest path') || keywords.includes('minimum steps')) {
+        return 'BFS'; // Queue + visited + level tracking
+    }
+
+    if (keywords.includes('all paths') || keywords.includes('generate all') || keywords.includes('combinations')) {
+        return 'DFS'; // Recursion + backtracking + collect results
+    }
+
+    // Optimization patterns
+    if ((keywords.includes('maximum') || keywords.includes('minimum')) &&
+        (keywords.includes('subproblem') || keywords.includes('choice'))) {
+        return 'Dynamic Programming'; // State transition + memoization
+    }
+
+    if (keywords.includes('locally optimal') || keywords.includes('greedy')) {
+        return 'Greedy Algorithm'; // Sort + make best choice at each step
+    }
+
+    // Array/String patterns
+    if (keywords.includes('contiguous') &&
+        (keywords.includes('subarray') || keywords.includes('substring'))) {
+        return 'Sliding Window'; // Two pointers + expand/shrink window
+    }
+
+    if (keywords.includes('sorted array') && keywords.includes('pair')) {
+        return 'Two Pointers'; // left/right pointers moving toward each other
+    }
+
+    if (keywords.includes('anagram') || keywords.includes('frequency') || keywords.includes('count')) {
+        return 'Frequency Counter'; // Map/object to count occurrences
+    }
+
+    if (keywords.includes('recursive') || keywords.includes('similar subproblems')) {
+        return 'Recursion'; // Base case + recursive case
+    }
+
+    return 'Analyze further - might need combination of patterns';
+}
+
+// Example usage:
+console.log(detectPattern("Find shortest path in unweighted graph")); // "BFS"
+console.log(detectPattern("Generate all valid parentheses combinations")); // "DFS"
+console.log(detectPattern("Maximum sum contiguous subarray")); // "Sliding Window"
+console.log(detectPattern("Two sum in sorted array")); // "Two Pointers"
+console.log(detectPattern("Check if strings are anagrams")); // "Frequency Counter"
+```
+
+### 🎯 Real Problem Examples with Solutions
+
+**Example 1: "Rotting Oranges" - Multi-source BFS**
+```javascript
+// Problem: Minimum time for all oranges to rot (spreading pattern)
+// Detection: "minimum time" + "spreading" → BFS!
+
+function orangesRotting(grid) {
+    const rows = grid.length, cols = grid[0].length;
+    const queue = [];
+    let fresh = 0;
+
+    // Find all initially rotten oranges and count fresh ones
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            if (grid[r][c] === 2) queue.push([r, c, 0]); // [row, col, time]
+            else if (grid[r][c] === 1) fresh++;
+        }
+    }
+
+    const directions = [[0,1], [1,0], [0,-1], [-1,0]];
+    let maxTime = 0;
+
+    while (queue.length > 0) {
+        const [row, col, time] = queue.shift();
+        maxTime = Math.max(maxTime, time);
+
+        for (let [dr, dc] of directions) {
+            const newRow = row + dr, newCol = col + dc;
+            if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols &&
+                grid[newRow][newCol] === 1) {
+                grid[newRow][newCol] = 2; // Rot the orange
+                fresh--;
+                queue.push([newRow, newCol, time + 1]);
+            }
+        }
+    }
+
+    return fresh === 0 ? maxTime : -1;
+}
+```
+
+**Example 2: "House Robber" - Dynamic Programming**
+```javascript
+// Problem: Maximum money without robbing adjacent houses
+// Detection: "maximum" + "choices" + "constraint" → DP!
+
+function rob(nums) {
+    if (nums.length === 0) return 0;
+    if (nums.length === 1) return nums[0];
+
+    // dp[i] represents max money that can be robbed up to house i
+    let prev2 = nums[0];           // dp[i-2]
+    let prev1 = Math.max(nums[0], nums[1]); // dp[i-1]
+
+    for (let i = 2; i < nums.length; i++) {
+        const current = Math.max(
+            nums[i] + prev2,  // Rob current house + best from i-2
+            prev1             // Skip current house, take best from i-1
+        );
+        prev2 = prev1;
+        prev1 = current;
+    }
+
+    return prev1;
+}
+```
 
 ## Pattern Selection Guide
 
