@@ -879,6 +879,52 @@ function rob(nums) {
 }
 ```
 
+## 📊 Comprehensive Pattern Comparison Table
+
+| Pattern | When to Use | Example Problems | Time Complexity | Space Complexity | Key Formula/Signature |
+|---------|-------------|------------------|-----------------|------------------|----------------------|
+| **🌊 BFS** | • Shortest path (unweighted)<br>• Level-by-level exploration<br>• Minimum steps/operations<br>• "Spreading" scenarios | • Binary Tree Level Order<br>• Word Ladder<br>• Rotting Oranges<br>• Shortest Path in Grid | O(V + E) | O(V) | `queue.push(start)` + `visited.add()` |
+| **🌀 DFS** | • Find all paths/combinations<br>• Backtracking problems<br>• Generate all solutions<br>• Cycle detection | • Generate Parentheses<br>• N-Queens<br>• Word Search<br>• Path Sum | O(V + E) | O(h) | `dfs(current, path)` + backtrack |
+| **⚡ Dynamic Programming** | • Overlapping subproblems<br>• Optimal substructure<br>• "Count ways" problems<br>• Max/min with choices | • Climbing Stairs<br>• House Robber<br>• Longest Common Subsequence<br>• Coin Change | O(n×m) | O(n×m) | `dp[i] = f(dp[i-1], dp[i-2])` |
+| **⚔️ Divide & Conquer** | • Independent subproblems<br>• Sorted arrays<br>• "Find kth element"<br>• Merge operations | • Binary Search<br>• Merge Sort<br>• Quick Select<br>• Maximum Subarray | O(n log n) | O(log n) | `solve(left, mid) + solve(mid+1, right)` |
+| **📊 Frequency Counter** | • Anagram problems<br>• Character/element frequency<br>• Compare arrays/strings<br>• Avoid nested loops | • Valid Anagram<br>• Group Anagrams<br>• Find All Anagrams<br>• Two Arrays Equal | O(n) | O(k) | `map[char] = (map[char] || 0) + 1` |
+| **🎯 Greedy Algorithm** | • Local optimal = global optimal<br>• Activity selection<br>• Interval scheduling<br>• "Always pick best" | • Jump Game<br>• Gas Station<br>• Meeting Rooms<br>• Activity Selection | O(n log n) | O(1) | `sort() + pick_best_at_each_step()` |
+| **🔄 Recursion** | • Self-similar subproblems<br>• Tree/graph traversal<br>• Mathematical sequences<br>• Base + recursive case | • Tree Traversals<br>• Factorial<br>• Fibonacci<br>• Tower of Hanoi | O(b^d) | O(d) | `f(n) = base_case || f(n-1) + operation` |
+| **🪟 Sliding Window** | • Contiguous subarray/substring<br>• Fixed/variable window size<br>• Max/min in subarrays<br>• Substring conditions | • Max Sum Subarray Size K<br>• Longest Substring No Repeat<br>• Min Window Substring<br>• Fruits Into Baskets | O(n) | O(k) | `left, right = 0; expand/shrink window` |
+| **👆 Two Pointers** | • Sorted arrays<br>• Find pairs/triplets<br>• Palindrome checking<br>• In-place operations | • Two Sum II<br>• Valid Palindrome<br>• Remove Duplicates<br>• Container Most Water | O(n) | O(1) | `left=0, right=n-1; move toward center` |
+
+### 🔍 Quick Decision Matrix
+
+| Problem Characteristics | Primary Pattern | Secondary Considerations |
+|-------------------------|-----------------|-------------------------|
+| **"Find shortest path"** | BFS | Use Dijkstra if weighted |
+| **"Generate all combinations"** | DFS | Add memoization if overlapping |
+| **"Maximum/minimum with choices"** | Dynamic Programming | Use Greedy if local = global optimal |
+| **"Sorted array + find pair"** | Two Pointers | Use Binary Search for single element |
+| **"Contiguous subarray"** | Sliding Window | Use Prefix Sum for range queries |
+| **"Compare strings/arrays"** | Frequency Counter | Use Set for unique elements only |
+| **"Interval scheduling"** | Greedy Algorithm | Sort by end time usually optimal |
+| **"Tree/graph problems"** | DFS/BFS | DFS for paths, BFS for levels |
+| **"Mathematical sequence"** | Recursion | Add memoization for optimization |
+
+### 💡 Pattern Complexity Cheat Sheet
+
+```
+🚀 Most Efficient (O(1) - O(log n)):
+├─ Two Pointers: O(n) time, O(1) space
+├─ Sliding Window: O(n) time, O(k) space
+└─ Divide & Conquer: O(log n) space
+
+⚡ Efficient (O(n) - O(n²)):
+├─ BFS/DFS: O(V + E) time, O(V) space
+├─ Frequency Counter: O(n) time, O(k) space
+├─ Greedy: O(n log n) time, O(1) space
+└─ Dynamic Programming: O(n²) time, O(n²) space
+
+🐌 Watch Out (Exponential):
+└─ Recursion (without memoization): O(2^n) time, O(n) space
+```
+
 ## Pattern Selection Guide
 
 | Problem Type | Recommended Pattern |
