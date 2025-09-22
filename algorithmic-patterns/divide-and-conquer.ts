@@ -1,4 +1,4 @@
-function binarySearch(arr, target) {
+function binarySearch<T>(arr: T[], target: T): number {
   let left = 0;
   let right = arr.length - 1;
   while (left <= right) {
@@ -8,8 +8,6 @@ function binarySearch(arr, target) {
   }
   return -1;
 }
-
-// console.log(binarySearch([1, 3, 5, 7, 9], 7)); // 3
 
 export const divedeAndConquer = {
   name: 'Divide and Conquer - Binary Search',
