@@ -1,4 +1,8 @@
-function fib(num, memo = {}) {
+interface Memo {
+  [key: number]: number;
+}
+
+function fib(num: number, memo: Memo = {}): number {
   if (num <= 1) return num;
   if (memo[num]) return memo[num];
   memo[num] = fib(num - 1, memo) + fib(num - 2, memo);
